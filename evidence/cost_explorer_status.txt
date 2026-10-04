@@ -1,0 +1,19 @@
+AWS Cost Explorer / Billing evidence status
+===========================================
+Lab date: 2026-10-03 (UTC+7)
+
+- The initial Cost Explorer API request was denied because the lab IAM user did
+  not have ce:GetCostAndUsage.
+- A temporary least-privilege inline policy granting only ce:GetCostAndUsage was
+  attached for the read-only query.
+- Cost Explorer returned DataUnavailableException, so no actual cost value was
+  fabricated from the API response.
+- The temporary inline policy was removed after the query. The post-cleanup
+  verification confirmed that the policy was no longer present.
+- A Billing Console screenshot captured at 2026-10-04 08:49 (UTC+7) shows
+  $0.00 and 0 services, but its graph only covers through September 2026.
+  Therefore it does not yet represent the 2026-10-03 lab cost.
+- The separate baseline estimate in README_aws.md is approximately $0.1083 per
+  hour and excludes NAT data processing, data transfer, and ALB LCU usage.
+
+Related evidence: billing.png, cleanup_status.json, terraform_destroy.txt.

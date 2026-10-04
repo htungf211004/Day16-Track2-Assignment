@@ -1,0 +1,17 @@
+ubuntu@ip-10-0-10-45:~/ml-benchmark$ python3 benchmark.py --data creditcard.csv --output benchmark_result.json
+Loading dataset: /home/ubuntu/ml-benchmark/creditcard.csv
+Training LightGBM (205,060 train / 22,785 validation rows)...
+
+Benchmark results
+  Load data:                2.242 s
+  Split data:               0.224 s
+  Training:                 3.285 s
+  Best iteration:           34
+  AUC-ROC:                  0.971671
+  Accuracy:                 0.999473
+  F1-Score:                 0.833333
+  Precision:                0.914634
+  Recall:                   0.765306
+  Inference latency (1):    1.210 ms
+  Inference throughput:     487,160.04 rows/s (2.053 ms per 1000 rows)
+  JSON result:              /home/ubuntu/ml-benchmark/benchmark_result.json
