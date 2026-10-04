@@ -1,0 +1,35 @@
+{
+  "checked_at_utc": "2026-10-03T16:45:40Z",
+  "destroy_complete": true,
+  "terraform_result": "Destroy complete! Resources: 27 destroyed.",
+  "terraform_state": {
+    "serial": 63,
+    "resource_count": 0,
+    "output_count": 0
+  },
+  "temporary_iam_policy_present": false,
+  "resources": {
+    "ec2_instances": [
+      {
+        "id": "i-07832e5a65062447b",
+        "state": "terminated"
+      },
+      {
+        "id": "i-0ab03338e9af6bda9",
+        "state": "terminated"
+      }
+    ],
+    "nat_gateway": {
+      "id": "nat-061feb4b6c33713f8",
+      "state": "deleted"
+    },
+    "application_load_balancer": {
+      "name": "ai-inference-alb-bdf969bf",
+      "state": "not_found"
+    },
+    "vpc": {
+      "id": "vpc-01aa6feefe07e60a9",
+      "state": "not_found"
+    }
+  }
+}

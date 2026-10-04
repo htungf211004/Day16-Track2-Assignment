@@ -1,0 +1,80 @@
+      - id          = "vflpvw" -> null
+    }
+
+Plan: 0 to add, 0 to change, 27 to destroy.
+
+Changes to Outputs:
+  - alb_dns_name      = "ai-inference-alb-bdf969bf-1976339735.us-east-1.elb.amazonaws.com" -> null
+  - bastion_public_ip = "184.193.34.21" -> null
+  - endpoint_url      = "http://ai-inference-alb-bdf969bf-1976339735.us-east-1.elb.amazonaws.com/v1/completions" -> null
+  - gpu_private_ip    = "10.0.10.45" -> null
+aws_route_table_association.public_assoc[1]: Destroying... [id=rtbassoc-0804349a4258c6f1d]
+aws_lb_target_group_attachment.ai_tg_attach: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:056126810859:targetgroup/ai-inference-tg-bdf969bf/71d3c194aa49f317-20261003153858889200000002]
+aws_lb_listener.ai_listener: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:056126810859:listener/app/ai-inference-alb-bdf969bf/ce24e2413eb50a04/16d6953704d671f4]
+aws_instance.bastion: Destroying... [id=i-07832e5a65062447b]
+aws_route_table_association.public_assoc[0]: Destroying... [id=rtbassoc-04030d78e1bf0ea6c]
+aws_route_table_association.private_assoc[0]: Destroying... [id=rtbassoc-08d28184d55537f67]
+aws_route_table_association.private_assoc[1]: Destroying... [id=rtbassoc-07ceab72a8964ec8a]
+aws_lb_target_group_attachment.ai_tg_attach: Destruction complete after 2s
+aws_instance.gpu_node: Destroying... [id=i-0ab03338e9af6bda9]
+aws_lb_listener.ai_listener: Destruction complete after 2s
+aws_lb_target_group.ai_tg: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:056126810859:targetgroup/ai-inference-tg-bdf969bf/71d3c194aa49f317]
+aws_lb.ai_alb: Destroying... [id=arn:aws:elasticloadbalancing:us-east-1:056126810859:loadbalancer/app/ai-inference-alb-bdf969bf/ce24e2413eb50a04]
+aws_route_table_association.public_assoc[1]: Destruction complete after 50s
+aws_route_table_association.public_assoc[0]: Destruction complete after 50s
+aws_route_table.public_rt: Destroying... [id=rtb-0b90a70a47bfe3cb3]
+aws_route_table_association.private_assoc[1]: Destruction complete after 51s
+aws_route_table_association.private_assoc[0]: Destruction complete after 51s
+aws_route_table.private_rt: Destroying... [id=rtb-09bfaaa7af4614b84]
+aws_lb_target_group.ai_tg: Destruction complete after 0s
+aws_route_table.public_rt: Destruction complete after -48s
+aws_route_table.private_rt: Destruction complete after -48s
+aws_nat_gateway.nat: Destroying... [id=nat-061feb4b6c33713f8]
+aws_instance.bastion: Still destroying... [id=i-07832e5a65062447b, 00m10s elapsed]
+aws_instance.gpu_node: Still destroying... [id=i-0ab03338e9af6bda9, 00m10s elapsed]
+aws_lb.ai_alb: Still destroying... [id=arn:aws:elasticloadbalancing:us-east-1:...nference-alb-bdf969bf/ce24e2413eb50a04, 00m10s elapsed]
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 00m10s elapsed]
+aws_lb.ai_alb: Destruction complete after 18s
+aws_instance.bastion: Still destroying... [id=i-07832e5a65062447b, 00m20s elapsed]
+aws_instance.gpu_node: Still destroying... [id=i-0ab03338e9af6bda9, 00m20s elapsed]
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 00m20s elapsed]
+aws_instance.bastion: Still destroying... [id=i-07832e5a65062447b, 00m30s elapsed]
+aws_instance.gpu_node: Still destroying... [id=i-0ab03338e9af6bda9, 00m30s elapsed]
+aws_instance.bastion: Destruction complete after 33s
+aws_instance.gpu_node: Destruction complete after 31s
+aws_key_pair.lab_key: Destroying... [id=ai-lab-key-bdf969bf]
+aws_iam_instance_profile.ai_profile: Destroying... [id=ai-inference-profile-bdf969bf]
+aws_subnet.private[0]: Destroying... [id=subnet-0475e114392557aa1]
+aws_subnet.private[1]: Destroying... [id=subnet-07d0db8e67ff62dfc]
+aws_security_group.gpu_sg: Destroying... [id=sg-00acda9fb1fe37e4a]
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 00m30s elapsed]
+aws_key_pair.lab_key: Destruction complete after 1s
+aws_subnet.private[0]: Destruction complete after 1s
+aws_subnet.private[1]: Destruction complete after 1s
+aws_security_group.gpu_sg: Destruction complete after 1s
+aws_security_group.bastion_sg: Destroying... [id=sg-0677d4f20b28d7892]
+aws_security_group.alb_sg: Destroying... [id=sg-03e7f638918293d8b]
+aws_iam_instance_profile.ai_profile: Destruction complete after 2s
+aws_iam_role.ai_role: Destroying... [id=ai-inference-role-bdf969bf]
+aws_iam_role.ai_role: Destruction complete after 0s
+random_id.id: Destroying... [id=vflpvw]
+random_id.id: Destruction complete after 0s
+aws_security_group.alb_sg: Destruction complete after 2s
+aws_security_group.bastion_sg: Destruction complete after 2s
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 00m40s elapsed]
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 00m50s elapsed]
+aws_nat_gateway.nat: Still destroying... [id=nat-061feb4b6c33713f8, 01m00s elapsed]
+aws_nat_gateway.nat: Destruction complete after 1m2s
+aws_internet_gateway.igw: Destroying... [id=igw-0ab1953ffc8cf2233]
+aws_subnet.public[1]: Destroying... [id=subnet-08b8da3e74a38155a]
+aws_eip.nat_eip: Destroying... [id=eipalloc-0102d8b0790e03cad]
+aws_subnet.public[0]: Destroying... [id=subnet-030b253401a3a8b9e]
+aws_subnet.public[0]: Destruction complete after 51s
+aws_subnet.public[1]: Destruction complete after 2s
+aws_eip.nat_eip: Destruction complete after 2s
+aws_internet_gateway.igw: Destruction complete after 3s
+aws_vpc.ai_vpc: Destroying... [id=vpc-01aa6feefe07e60a9]
+aws_vpc.ai_vpc: Destruction complete after 1s
+
+Destroy complete! Resources: 27 destroyed.
+

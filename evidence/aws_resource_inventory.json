@@ -1,0 +1,42 @@
+{
+  "captured_at_utc": "2026-10-03T16:23:00Z",
+  "region": "us-east-1",
+  "ec2_instances": [
+    {
+      "name": "AI-Bastion-Host",
+      "instance_id": "i-07832e5a65062447b",
+      "instance_type": "t3.micro",
+      "state": "running",
+      "private_ip": "10.0.0.162",
+      "public_ip": "184.193.34.21",
+      "launch_time": "2026-10-03T15:25:41Z"
+    },
+    {
+      "name": "AI-CPU-LightGBM-Node",
+      "instance_id": "i-0ab03338e9af6bda9",
+      "instance_type": "t3.micro",
+      "state": "running",
+      "private_ip": "10.0.10.45",
+      "public_ip": null,
+      "launch_time": "2026-10-03T15:37:54Z"
+    }
+  ],
+  "nat_gateways": [
+    {
+      "name": "AI-NAT",
+      "nat_gateway_id": "nat-061feb4b6c33713f8",
+      "state": "available",
+      "vpc_id": "vpc-01aa6feefe07e60a9",
+      "create_time": "2026-10-03T15:25:40Z"
+    }
+  ],
+  "load_balancers": [
+    {
+      "name": "ai-inference-alb-bdf969bf",
+      "state": "active",
+      "dns_name": "ai-inference-alb-bdf969bf-1976339735.us-east-1.elb.amazonaws.com",
+      "type": "application",
+      "created_time": "2026-10-03T15:25:42.249Z"
+    }
+  ]
+}

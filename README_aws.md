@@ -2,7 +2,7 @@
 
 Chào mừng các bạn đến với Lab 16. Trong bài thực hành này, chúng ta sẽ thiết lập một môi trường Cloud AI hoàn chỉnh trên AWS bằng cách sử dụng **Terraform** (Infrastructure as Code).
 
-**Luồng chính (bắt buộc) của bài lab:** triển khai hạ tầng bằng Terraform, khởi động một **CPU instance nhỏ** (`t3.medium`), và huấn luyện + inference một mô hình **LightGBM** (gradient boosting) thực tế trên đó — không cần GPU, không cần xin quota, không cần tài khoản Hugging Face.
+**Luồng chính (bắt buộc) của bài lab:** triển khai hạ tầng bằng Terraform, khởi động một **CPU instance nhỏ** (`t3.micro`), và huấn luyện + inference một mô hình **LightGBM** (gradient boosting) thực tế trên đó — không cần GPU, không cần xin quota, không cần tài khoản Hugging Face.
 
 Ở cuối bài có thêm **Phụ lục (Tùy chọn — bài tập nâng cao)**: nếu bạn muốn thử sức và tài khoản của mình xin được quota GPU, bạn có thể triển khai một mô hình ngôn ngữ lớn (LLM — `google/gemma-4-E2B-it`) lên máy chủ GPU (NVIDIA T4) bằng Docker/vLLM, phục vụ qua Load Balancer. Phần này **không bắt buộc** để hoàn thành lab.
 
@@ -73,7 +73,7 @@ Lệnh này tạo ra hai file: `lab-key` (private key, giữ bí mật) và `lab
 Terraform là công cụ giúp chúng ta khởi tạo hạ tầng AWS hoàn toàn tự động bằng code. Kiến trúc bao gồm:
 - Mạng **Private VPC** cách ly hoàn toàn với bên ngoài.
 - **Bastion Host** (t3.micro) ở Public Subnet: Dùng làm trạm trung chuyển an toàn để SSH vào Compute Node.
-- **Compute Node** (`t3.medium` — 2 vCPU / 4 GB RAM) ở Private Subnet: Đây là nơi bạn sẽ cài đặt và chạy LightGBM. Instance này **mặc định là CPU**; hạ tầng đã được viết sẵn để chuyển sang GPU (`g4dn.xlarge`) nếu bạn làm Phụ lục ở cuối bài, thông qua biến `enable_gpu`.
+- **Compute Node** (`t3.micro` — 2 vCPU / 1 GiB RAM) ở Private Subnet: Đây là nơi bạn sẽ cài đặt và chạy LightGBM. Instance này **mặc định là CPU**; hạ tầng đã được viết sẵn để chuyển sang GPU (`g4dn.xlarge`) nếu bạn làm Phụ lục ở cuối bài, thông qua biến `enable_gpu`.
 - **NAT Gateway**: Cho phép Private Subnet tải package/dataset từ internet.
 - **Application Load Balancer (ALB)**: Mở cổng 80 (HTTP), trỏ vào cổng 8000 của Compute Node. Ở luồng CPU mặc định sẽ chưa có gì lắng nghe cổng 8000 nên **health check của ALB sẽ hiển thị "unhealthy" — đây là điều bình thường**, bạn không cần xử lý gì cả trừ khi làm Phụ lục GPU + LLM.
 
@@ -149,7 +149,7 @@ kaggle datasets download -d mlg-ulb/creditcardfraud --unzip -p ~/ml-benchmark/
 
 ### Bước 4.4: Huấn luyện và Inference với LightGBM
 
-Viết một script Python (ví dụ `benchmark.py`) thực hiện:
+Script [`benchmark.py`](benchmark.py) thực hiện:
 1. Load dataset và tách tập train/test.
 2. Huấn luyện một `LGBMClassifier` (hoặc `lightgbm.train`) để phát hiện gian lận.
 3. Đo thời gian load data và thời gian training.
@@ -157,20 +157,31 @@ Viết một script Python (ví dụ `benchmark.py`) thực hiện:
 5. Đo **inference latency** (dự đoán 1 dòng) và **inference throughput** (dự đoán 1000 dòng).
 6. Ghi toàn bộ kết quả ra file `benchmark_result.json`.
 
-Chạy script và điền kết quả vào bảng:
+Chạy script trong cùng thư mục với `creditcard.csv`:
+
+```bash
+cd ~/ml-benchmark
+python3 benchmark.py
+```
+
+Script dùng phép chia phân tầng gồm train/validation/test (205,060/22,785/56,962 dòng), early stopping trên validation và chỉ đánh giá metrics cuối cùng trên test. Latency và throughput là median sau warm-up (tương ứng 200 lần dự đoán 1 dòng và 30 lần dự đoán batch 1,000 dòng).
+
+Kết quả dưới đây được đo lúc **23:22 ngày 03/10/2026 (UTC+7)** trên CPU node `t3.micro` hiện tại (2 vCPU, khoảng 1 GiB RAM). Kết quả đầy đủ và thông tin phiên bản môi trường nằm trong [`benchmark_result.json`](benchmark_result.json); output terminal nằm trong [`evidence/benchmark_terminal.txt`](evidence/benchmark_terminal.txt).
 
 | Metric | Kết quả |
 |---|---|
-| Thời gian load data | |
-| Thời gian training | |
-| Best iteration | |
-| AUC-ROC | |
-| Accuracy | |
-| F1-Score | |
-| Precision | |
-| Recall | |
-| Inference latency (1 row) | |
-| Inference throughput (1000 rows) | |
+| Thời gian load data | 2.242 giây |
+| Thời gian training | 3.285 giây |
+| Best iteration | 34 |
+| AUC-ROC | 0.971671 |
+| Accuracy | 0.999473 |
+| F1-Score | 0.833333 |
+| Precision | 0.914634 |
+| Recall | 0.765306 |
+| Inference latency (1 row) | 1.210 ms |
+| Inference throughput (1000 rows) | 487,160.04 dòng/giây (2.053 ms/batch) |
+
+**Nhận xét ngắn:** Dataset 284,807 dòng được load trong 2.242 giây và model chỉ mất 3.285 giây để huấn luyện trên CPU. AUC-ROC 0.971671 cho thấy khả năng xếp hạng giao dịch gian lận tốt. Accuracy rất cao nhưng cần đọc cùng F1/Precision/Recall vì tỷ lệ gian lận chỉ khoảng 0.173%. Precision 0.914634 nghĩa là phần lớn cảnh báo gian lận là chính xác, trong khi Recall 0.765306 cho thấy model vẫn bỏ sót khoảng 23.47% giao dịch gian lận. Inference theo batch đạt khoảng 487 nghìn dòng/giây, phù hợp cho xử lý offline hoặc micro-batch; latency 1 dòng khoảng 1.21 ms trên node CPU nhỏ.
 
 ---
 
@@ -200,11 +211,14 @@ Bạn cũng có thể xem các chỉ số này trên **EC2 Console -> Instances 
 
 | Dịch vụ | Instance/Loại | Chi phí/giờ |
 |---|---|---|
-| EC2 — Compute Node | `t3.medium` | ~$0.0416 |
-| EC2 — Bastion | `t3.micro` | ~$0.010 |
-| NAT Gateway | (mỗi AZ) | ~$0.045 + data |
-| ALB | Application Load Balancer | ~$0.008 |
-| **Tổng ước tính** | | **~$0.10/giờ** |
+| EC2 — Compute Node | `t3.micro` | ~$0.0104 |
+| EC2 — Bastion | `t3.micro` | ~$0.0104 |
+| NAT Gateway | 1 gateway | ~$0.045 + $0.045/GB xử lý |
+| ALB | Application Load Balancer | ~$0.0225 + $0.008/LCU-giờ |
+| Public IPv4 | 4 địa chỉ (Bastion, NAT, ALB) | ~$0.0200 |
+| **Tổng nền ước tính** | Chưa gồm data transfer/LCU | **~$0.1083/giờ** |
+
+Mức giá trên được kiểm tra theo các trang chính thức [EC2 On-Demand](https://aws.amazon.com/ec2/pricing/on-demand/), [Amazon VPC/NAT/Public IPv4](https://aws.amazon.com/vpc/pricing/) và [Elastic Load Balancing](https://aws.amazon.com/elasticloadbalancing/pricing/) tại thời điểm làm bài. Cost Explorer được truy vấn bằng quyền `ce:GetCostAndUsage` tạm thời nhưng trả `DataUnavailableException` do dữ liệu tài khoản chưa khả dụng; policy tạm đã được gỡ. Bằng chứng nằm trong [`evidence/cost_explorer_status.txt`](evidence/cost_explorer_status.txt), không thay bằng số liệu giả. Snapshot CPU/RAM/network thực tế nằm trong [`evidence/system_resources.txt`](evidence/system_resources.txt) và [`evidence/system_resources.png`](evidence/system_resources.png).
 
 ### 5.3: GPU usage (Tùy chọn)
 Chỉ áp dụng nếu bạn đã làm Phụ lục GPU + LLM ở cuối bài. Kiểm tra bằng lệnh `nvidia-smi` trên Compute Node (chi tiết ở Phụ lục).
@@ -234,6 +248,8 @@ Chạy lệnh sau trong thư mục `terraform`:
 terraform destroy
 ```
 Gõ `yes` khi được hỏi. Quá trình xóa sẽ mất khoảng 5 phút. Hãy đợi đến khi terminal báo `Destroy complete!` để chắc chắn mọi thứ đã bị xóa.
+
+**Kết quả thực tế:** cleanup đã hoàn tất với thông báo `Destroy complete! Resources: 27 destroyed.` Hai EC2 đã `terminated`, NAT Gateway đã `deleted`, ALB và VPC không còn tồn tại; Terraform state còn 0 resources và 0 outputs. Xem [`evidence/terraform_destroy.txt`](evidence/terraform_destroy.txt) và [`evidence/cleanup_status.json`](evidence/cleanup_status.json).
 
 ---
 
